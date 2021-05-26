@@ -1,0 +1,22 @@
+{
+  "name": "crowdpointnfts-smartcontract",
+  "version": "1.0.0",
+  "description": "CrowdPoint NFT SmartContract",
+  "main": "truffle-config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrowdPointNFTs/CrowdPointNFTs-SmartContract.git"
+  },
+  "author": "LemonCryptoDev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CrowdPointNFTs/CrowdPointNFTs-SmartContract/issues"
+  },
+  "homepage": "https://github.com/CrowdPointNFTs/CrowdPointNFTs-SmartContract#readme",
+  "dependencies": {
+    "openzeppelin-solidity": "3.4.1"
+  }
+}
