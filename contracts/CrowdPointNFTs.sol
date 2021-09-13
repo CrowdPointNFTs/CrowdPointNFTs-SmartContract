@@ -152,6 +152,7 @@ library SafeMath {
 contract CrowdPointNFT is ERC721URIStorage, ERC721Enumerable, Ownable {
     using SafeMath for uint256;
     using Address for address;
+    using Strings for uint256;
 
     enum NFT_TYPE {NONE, FIXED_PRICE, AUCTION, UNLIMITED_AUCTION}
     
@@ -183,6 +184,10 @@ contract CrowdPointNFT is ERC721URIStorage, ERC721Enumerable, Ownable {
 
     mapping (uint256=>BidEntity[]) public bidArrayOfToken;
     mapping (uint256=>mapping(address=>bool)) public bidStatusOfToken;
+
+    string private bulkMintBaseUrl = "";
+    uint256 private bulkMintLimit = 0;
+    uint256 private bulkMintIndex = 0;
 
 
 
@@ -298,9 +303,24 @@ contract CrowdPointNFT is ERC721URIStorage, ERC721Enumerable, Ownable {
         feePercent = _feePercent;
     }
 
-    function mintFixed(string memory _tokenURI, uint256 _price, uint256 _royalty) external returns (uint256) {
-        mintIndex = mintIndex.add(1);
+    function setBulkMintBaseUrl(string memory _bulkMintBaseUrl, uint256 _bulkMintLimit) external onlyOwner {
+        bulkMintBaseUrl = _bulkMintBaseUrl;
+        bulkMintLimit = _bulkMintLimit;
+        bulkMintIndex = 0;
+    }
+    function bulkMint(uint256 _numberOfToken, uint256 _price, uint256 _royalty) external onlyOwner {
+        for(uint i = 0; i < _numberOfToken; i++){
+            if (bulkMintIndex >= bulkMintLimit) return;
+            string memory _tokenUri = string(abi.encodePacked(bulkMintBaseUrl, bulkMintIndex.toString()));
+            mintFixed(_tokenUri, _price, _royalty);
+            bulkMintIndex = bulkMintIndex.add(1);
+        }
+    }
+    
+
+    function mintFixed(string memory _tokenURI, uint256 _price, uint256 _royalty) public returns (uint256) {
         uint256 _tokenId = mintIndex;
+        mintIndex = mintIndex.add(1);
         mapNFTAttribute[_tokenId].nftType = NFT_TYPE.FIXED_PRICE;
         mapNFTAttribute[_tokenId].creator = _msgSender();
         mapNFTAttribute[_tokenId].royalty = _royalty;
@@ -316,8 +336,8 @@ contract CrowdPointNFT is ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     function mintAuction(string memory _tokenURI, uint256 _minBidPrice, uint256 _startTime, uint256 _endTime, uint256 _royalty) external returns (uint256) {
-        mintIndex = mintIndex.add(1);
         uint256 _tokenId = mintIndex;
+        mintIndex = mintIndex.add(1);
         mapNFTAttribute[_tokenId].nftType = NFT_TYPE.AUCTION;
         mapNFTAttribute[_tokenId].creator = _msgSender();
         mapNFTAttribute[_tokenId].royalty = _royalty;
@@ -335,8 +355,8 @@ contract CrowdPointNFT is ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     function mintUnlimitedAuction(string memory _tokenURI, uint256 _royalty) external returns (uint256) {
-        mintIndex = mintIndex.add(1);
         uint256 _tokenId = mintIndex;
+        mintIndex = mintIndex.add(1);
         mapNFTAttribute[_tokenId].nftType = NFT_TYPE.UNLIMITED_AUCTION;
         mapNFTAttribute[_tokenId].creator = _msgSender();
         mapNFTAttribute[_tokenId].royalty = _royalty;
