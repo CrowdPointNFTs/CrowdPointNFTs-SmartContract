@@ -1,1 +1,1 @@
-# CrowdPointNFTs-SmartContract
+# BlokistaNFT-SmartContract
